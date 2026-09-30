@@ -1,0 +1,43 @@
+# Release automática a cada merge em main: versão (Conventional Commits) → tag → GitHub Release com notas.
+# Versão forçada: Actions → Release → Run workflow.
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão sem "v" (ex.: 1.0.0). Vazio = calcular.'
+        required: false
+
+permissions:
+  contents: write
+  packages: read
+
+concurrency:
+  group: release
+
+jobs:
+  release:
+    name: Versão e release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@elizfab'
+      - name: Versão, tag e release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORCED: ${{ inputs.version }}
+        run: |
+          version="${FORCED:-$(npx --yes --package @elizfab/danger-rules elizfab-rules next-version)}"
+          if [ -z "$version" ]; then echo "Sem commits que gerem release." >> "$GITHUB_STEP_SUMMARY"; exit 0; fi
+          gh release create "v$version" --target "$GITHUB_SHA" --title "v$version" --generate-notes
+          echo "🏷️ Release v$version publicada" >> "$GITHUB_STEP_SUMMARY"

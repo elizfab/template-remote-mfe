@@ -1,0 +1,32 @@
+# Danger em eventos do PR que não vêm de push em feature/* (esses rodam no auto-pr.yml).
+name: Danger
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  statuses: write
+  packages: read
+
+jobs:
+  danger:
+    name: Danger
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: npx danger ci --failOnErrors
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

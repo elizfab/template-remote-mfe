@@ -1,0 +1,25 @@
+# Só "feature/<nome-da-atividade>" é aceito (além de main e develop).
+name: Branch name
+
+on:
+  push:
+    branches-ignore: [main, develop]
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  branch-name:
+    name: Branch name
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@elizfab'
+      - name: Validar feature/<nome-da-atividade>
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx --yes --package @elizfab/danger-rules elizfab-rules branch "$GITHUB_REF_NAME"
