@@ -1,5 +1,8 @@
 # {{NOME}}
 
+[![CI](https://github.com/elizfab/{{REPO}}/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/elizfab/{{REPO}}/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/elizfab/{{REPO}})](https://github.com/elizfab/{{REPO}}/releases)
+
 > Repositório criado a partir do [template-remote-mfe](https://github.com/elizfab/template-remote-mfe): um **micro frontend
 > (remote)** Angular pronto para ser carregado pelo [portfólio MFE](https://github.com/elizfab/mfe-elizabetefabri-portfolio).
 
